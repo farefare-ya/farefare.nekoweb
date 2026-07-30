@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>farefarer.nekoweb.org</title>
+<link rel="icon" type="image/png" href="img/favicon.png">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:Segoe UI,Tahoma,sans-serif;
+    min-height:100vh;
+    background:url(img/mado4.png) center/cover fixed;
+    color:#fff;
+    user-select:none;
+  }
+  header{
+    text-align:center;
+    padding:1rem;
+    font-weight:700;
+    font-size:1.6rem;
+    background:rgba(255,255,255,.06);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(255,255,255,.08);
+    text-shadow:0 0 6px #b96cc6;
+  }
+  .container{display:flex;justify-content:center;padding:2rem}
+  main{max-width:1100px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+  .glass{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:1.6rem;backdrop-filter:blur(12px)}
+  h1,h2{color:#ffe7f9;margin-bottom:.6rem;text-shadow:0 0 6px #c56aa8}
+  p,li{line-height:1.6;text-shadow:0 0 6px #b96cc6}
+  /* comments */
+  .comment-box{display:flex;flex-direction:column}
+  .comments-list{flex:1;max-height:400px;overflow-y:auto;margin-top:1rem}
+  .comment{background:rgba(194,101,255,.45);border-radius:8px;padding:.9rem;margin-bottom:1rem}
+  .comment-header{display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.3rem}
+  .comment-name{font-weight:700;color:#ffbdf2}
+  .comment-time{color:#ddd}
+  .comment-text{line-height:1.4;white-space:pre-wrap}
+  .comment-form{margin-top:auto}
+  .comment-form input,.comment-form textarea{
+    width:100%;padding:.7rem;margin-bottom:.5rem;background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.06);border-radius:8px;color:#fff;
+  }
+  .comment-form button{
+    background:#b96cc6;border:none;padding:.7rem 1.2rem;border-radius:8px;color:#fff;cursor:pointer
+  }
+  .comment-form button:hover{background:#c94fd3}
+  @media(max-width:768px){main{grid-template-columns:1fr}.container{padding:1rem}}
+</style>
+<!-- firebase client libs -->
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+<script>
+/* minimal hardening */
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("dragstart", e => e.preventDefault());
+
+/* Firebase init (client config - expected to be public) */
+firebase.initializeApp({
+  apiKey: "",
+  authDomain: "commentmadokers.firebaseapp.com",
+  databaseURL: "",
+  projectId: "commentmadokers"
+});
+const db = firebase.database();
+
+/* smarter frontend rate limiter */
+/* allow up to MAX_SEND within WINDOW_MS time window */
+const MAX_SEND = 2;
+const WINDOW_MS = 3000;
+let sendCount = 0;
+let firstSendTime = 0;
+
+function submitComment() {
+  const now = Date.now();
+
+  // initialize/reset window if expired or first send
+  if (firstSendTime === 0 || now - firstSendTime > WINDOW_MS) {
+    firstSendTime = now;
+    sendCount = 0;
+  }
+
+  // increment and check
+  sendCount++;
+  if (sendCount > MAX_SEND) {
+    alert("Spam Preventer");
+    return;
+  }
+
+  const nameEl = document.getElementById("comment-name");
+  const textEl = document.getElementById("comment-text");
+  const name = nameEl.value.trim();
+  const text = textEl.value.trim();
+
+  // simple front validation to match Firebase rules
+  if (!name || !text) return;
+  if (name.length > 30 || text.length > 300) {
+    alert("name or comment too long");
+    return;
+  }
+
+  // push to firebase
+  db.ref("comments").push({
+    name: name,
+    text: text,
+    timestamp: Date.now()
+  }).then(() => {
+    textEl.value = "";
+  }).catch(err => {
+    console.error("push error", err);
+    alert("failed to send");
+  });
+}
+
+/* load comments - XSS safe (uses textContent) */
+function loadComments() {
+  const list = document.getElementById("comments-list");
+  // limit to last 50 for performance
+  db.ref("comments").limitToLast(50).on("value", snap => {
+    list.innerHTML = "";
+    const data = snap.val();
+    if (!data) return;
+    // data is an object keyed by push ids
+    Object.values(data).reverse().forEach(c => {
+      const wrap = document.createElement("div");
+      wrap.className = "comment";
+
+      const head = document.createElement("div");
+      head.className = "comment-header";
+
+      const n = document.createElement("span");
+      n.className = "comment-name";
+      n.textContent = c.name;
+
+      const t = document.createElement("span");
+      t.className = "comment-time";
+      t.textContent = (c.timestamp ? new Date(c.timestamp).toLocaleString() : "");
+
+      head.appendChild(n);
+      head.appendChild(t);
+
+      const textDiv = document.createElement("div");
+      textDiv.className = "comment-text";
+      // use textContent to avoid HTML injection
+      textDiv.textContent = c.text || "";
+
+      wrap.appendChild(head);
+      wrap.appendChild(textDiv);
+      list.appendChild(wrap);
+    });
+  }, err => {
+    console.error("loadComments error", err);
+    list.innerHTML = "<p>Failed to load comments</p>";
+  });
+}
+
+/* attach handlers */
+window.addEventListener("DOMContentLoaded", () => {
+  loadComments();
+  document.getElementById("comment-form").addEventListener("submit", e => {
+    e.preventDefault();
+    submitComment();
+  });
+});
+</script>
+</head>
+<body>
+<header>farefarer.nekoweb.org</header>
+
+<div class="container">
+  <main>
+    <section class="glass">
+      <h1>note</h1>
+      <p>hi i made this website</p>
+      <p>welcome to my site</p>
+      <p>if you have something to say pls leave a comment</p>
+      <p>Thank you</p>
+    </section>
+
+    <section class="glass comment-box">
+      <h2>comments</h2>
+      <div id="comments-list" class="comments-list" aria-live="polite"></div>
+
+      <form id="comment-form" class="comment-form">
+        <!-- maxlengths match your Firebase rules -->
+        <input id="comment-name" placeholder="name" required maxlength="30" aria-label="name">
+        <textarea id="comment-text" rows="3" placeholder="comment" required maxlength="300" aria-label="comment"></textarea>
+        <button type="submit">send</button>
+      </form>
+    </section>
+  </main>
+</div>
+</body>
+</html>

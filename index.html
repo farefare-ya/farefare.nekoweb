@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>farefare site</title>
+
+<style>
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.wrapper {
+  display: flex;
+  width: 1000px;
+  margin: 10px auto;
+  gap: 10px;
+}
+
+.panels {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.kotitle {
+  border: 1px solid white;
+  height: 100px;
+  border-radius: 4px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: black;
+  color: white;
+}
+
+.kotak {
+  border: 1px solid white;
+  height: 700px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  background: black;
+  color: white;
+}
+
+.kobottom {
+  border: 1px solid white;
+  height: 200px;
+  border-radius: 4px;
+  background: black;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
+  line-height: 0.2;
+  font-size: 14px;
+  overflow-wrap: break-word;
+}
+
+.isian {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.comments-list {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  margin-bottom: 8px;
+  scrollbar-width: thin;
+}
+
+.comment {
+  margin-bottom: 8px;
+  padding: 6px;
+  border: 1px solid white;
+  background: black;
+  color: white;
+  border-radius: 4px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  opacity: 0.7;
+  padding: 0 4px;
+  gap: 8px;
+}
+
+.comment-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.comment-time {
+  white-space: nowrap;
+  opacity: 0.7;
+}
+
+#comment-name {
+  width: 100%;
+  font-size: 14px;
+  padding: 8px 10px;
+  box-sizing: border-box;
+}
+
+.comment-form input,
+.comment-form textarea {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: white;
+  background-color: black;
+  border: 1px solid white;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  box-sizing: border-box;
+  resize: none;
+}
+
+.comment-form button {
+  background: white;
+  color: black;
+  border: 1px solid white;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.comment-form button:hover {
+  opacity: 0.7;
+}
+
+.led-sign { 
+border: 1px solid white; 
+height: 30px;
+border-radius: 4px;
+background-color: black;
+overflow: hidden;
+position: relative;
+display: flex;
+align-items: center;
+}
+
+.KOTAKU { 
+border: 1px solid white; 
+height: 400px;
+border-radius: 4px;
+background-color: black;
+overflow: hidden;
+align-items: center;
+}
+
+.led-text { 
+  position: absolute;
+  white-space: nowrap; 
+  color: white; 
+  font-size: 12px; 
+  font-weight: bold; 
+  letter-spacing: 0px;
+  word-spacing: 10px;
+  animation: scroll-left 30s linear infinite; 
+  } 
+  @keyframes scroll-left { 
+    0% { 
+      transform: translateX(100%); 
+  } 
+  100% { 
+    transform: translateX(-100%); 
+    } 
+  } 
+
+  #bg-video {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%; 
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -1;
+  object-fit: cover; */
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  color: white;
+  text-align: center;
+}
+
+.xxaa{
+  color: white;
+  font-size: 30px;
+  font-weight: bold;
+}
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+
+<script>
+document.addEventListener("contextmenu", e => e.preventDefault());
+
+firebase.initializeApp({
+  apiKey: "AIzaSyAsIj90go5g5A-_YNybEE66Z04b6ABS6VQ",
+  authDomain: "commentmadokers.firebaseapp.com",
+  databaseURL: "https://commentmadokers-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "commentmadokers"
+});
+
+const db = firebase.database();
+const MAX_SEND = 2;
+const WINDOW_MS = 3000;
+let sendCount = 0;
+let firstSendTime = 0;
+const COOLDOWN_MS = 1500;
+
+function submitComment() {
+
+  const now = Date.now();
+  const lastSend = localStorage.getItem("lastSend");
+
+  if (lastSend && now - lastSend < COOLDOWN_MS) {
+    return;
+  }
+
+  if (firstSendTime === 0 || now - firstSendTime > WINDOW_MS) {
+    firstSendTime = now;
+    sendCount = 0;
+  }
+
+  sendCount++;
+  if (sendCount > MAX_SEND) return;
+
+  const nameEl = document.getElementById("comment-name");
+  const textEl = document.getElementById("comment-text");
+
+  const name = nameEl.value.trim();
+  const text = textEl.value.trim();
+
+  if (!name || !text) return;
+  if (name.length > 30 || text.length > 300) return;
+
+  localStorage.setItem("lastSend", now);
+
+  db.ref("comments").push({
+    name,
+    text,
+    timestamp: now
+  }).then(() => {
+    textEl.value = "";
+  });
+}
+
+function loadComments() {
+  const list = document.getElementById("comments-list");
+
+  db.ref("comments").limitToLast(50).on("value", snap => {
+    list.innerHTML = "";
+
+    const data = snap.val();
+    if (!data) return;
+
+    Object.values(data).reverse().forEach(c => {
+
+      const wrap = document.createElement("div");
+      wrap.className = "comment";
+
+      const head = document.createElement("div");
+      head.className = "comment-header";
+
+      const n = document.createElement("span");
+      n.className = "comment-name";
+      n.textContent = c.name;
+
+      const t = document.createElement("span");
+t.className = "comment-time";
+
+const date = new Date(c.timestamp);
+let hours = date.getHours();
+const minutes = String(date.getMinutes()).padStart(2,'0');
+const ampm = hours >= 12 ? 'PM' : 'AM';
+hours = hours % 12;
+hours = hours ? hours : 12;
+
+t.textContent = `${hours}:${minutes} ${ampm}`;
+
+      const textDiv = document.createElement("div");
+      textDiv.textContent = c.text;
+
+      head.appendChild(n);
+      head.appendChild(t);
+
+      wrap.appendChild(head);
+      wrap.appendChild(textDiv);
+
+      list.appendChild(wrap);
+    });
+  });
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  loadComments();
+
+  document.getElementById("comment-form").addEventListener("submit", e => {
+    e.preventDefault();
+    submitComment();
+  });
+});
+</script>
+
+</head>
+<body>
+  <video autoplay muted loop playsinline poster="fallback-image.jpg" id="bg-video">
+  <source src="video/checker.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+<div class="content">
+</div>
+
+
+<div class="wrapper">
+  <div class="panels">
+
+    <div class="kotitle">
+      <h1>FAREFARE.NEKOWEB.ORG</h1>
+    </div>
+
+<div class="led-sign"> 
+  <div class="led-text">WELCOME TO MY COMMENT SECTION &nbsp;&nbsp;&nbsp;&nbsp; WELCOME TO MY COMMENT SECTION &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WELCOME TO MY COMMENT SECTION &nbsp;</div>
+</div>
+
+<div class="KOTAKU"> 
+<div class="xxaa">TEST 123</div>
+</div> 
+
+    <div class="kotak">
+      <div class="isian">
+
+        <div id="comments-list" class="comments-list"></div>
+
+        <form id="comment-form" class="comment-form">
+          <input id="comment-name" placeholder="name" maxlength="30" required>
+          <textarea id="comment-text" rows="2" placeholder="comment" maxlength="300" required></textarea>
+          <button type="submit">send</button>
+        </form>
+
+      </div>
+    </div>
+
+    <div class="kobottom">
+  <div class="isian">
+    <p>ATTENTION</p>
+    <p>1. No Hate or profanity.</p>
+    <p>2. No Spamming.</p>
+    <p>3. No Exploit or Payload injection.</p>
+    <p>4. Be kind and Respectful.</p>
+  </div>
+</div>
+
+  </div>
+</div>
+
+</body>
+</html>
