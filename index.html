@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>farefare site</title>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Blog post and guestbook ">
+<title>farefare.nekoweb.org</title>
+</head>
 <style>
 *,
 *::before,
@@ -232,9 +235,9 @@ align-items: center;
 document.addEventListener("contextmenu", e => e.preventDefault());
 
 firebase.initializeApp({
-  apiKey: "AIzaSyAsIj90go5g5A-_YNybEE66Z04b6ABS6VQ",
+  apiKey: "",
   authDomain: "commentmadokers.firebaseapp.com",
-  databaseURL: "https://commentmadokers-default-rtdb.asia-southeast1.firebasedatabase.app",
+  databaseURL: "",
   projectId: "commentmadokers"
 });
 
@@ -338,8 +341,6 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 });
 </script>
-
-</head>
 <body>
   <video autoplay muted loop playsinline poster="fallback-image.jpg" id="bg-video">
   <source src="video/checker.mp4" type="video/mp4">
