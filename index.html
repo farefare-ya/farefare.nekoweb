@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Blog post and guestbook simple website blogpost sharing comment">
+<title>farefare.nekoweb.org</title>
+</head>
+<style>
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.wrapper {
+  display: flex;
+  width: 1000px;
+  margin: 10px auto;
+  gap: 10px;
+}
+
+.panels {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.banner {
+  border: 1px solid white;
+  border-radius: 4px;
+  background: black;
+  color: white;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.5;
+}
+
+.banner-inner svg {
+  width: 24px;
+  height: 24px;
+  fill: white;
+}
+
+.banner-label {
+  font-size: 16px;
+  letter-spacing: 3px;
+}
+
+.profile-large {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+  padding: 0 40px;
+}
+
+.profile-pic-lg {
+  width: 200px;
+  height: 200px;
+  border: 1px dashed white;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: black;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.profile-pic-lg svg {
+  width: 100px;
+  height: 100px;
+  fill: white;
+  opacity: 0.55;
+}
+
+.profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-name-lg {
+  font-size: 34px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.profile-desc {
+  font-size: 14px;
+  line-height: 1.7;
+  opacity: 0.85;
+  margin: 0 0 14px 0;
+}
+
+.profile-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-links p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.profile-link-label {
+  font-weight: bold;
+  margin-right: 6px;
+}
+
+.profile-links a {
+  color: white;
+  text-decoration: underline;
+}
+
+.profile-links a:hover {
+  opacity: 0.7;
+}
+
+.kotitle {
+  border: 1px solid white;
+  height: 100px;
+  border-radius: 4px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: black;
+  color: white;
+}
+
+.kotak {
+  border: 1px solid white;
+  height: 700px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  background: black;
+  color: white;
+}
+
+.kobottom {
+  border: 1px solid white;
+  height: 200px;
+  border-radius: 4px;
+  background: black;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
+  line-height: 0.2;
+  font-size: 14px;
+  overflow-wrap: break-word;
+}
+
+.isian {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.comments-list {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  margin-bottom: 8px;
+  scrollbar-width: thin;
+}
+
+.comment {
+  margin-bottom: 8px;
+  padding: 6px;
+  border: 1px solid white;
+  background: black;
+  color: white;
+  border-radius: 4px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  opacity: 0.7;
+  padding: 0 4px;
+  gap: 8px;
+}
+
+.comment-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.comment-time {
+  white-space: nowrap;
+  opacity: 0.7;
+}
+
+#comment-name {
+  width: 100%;
+  font-size: 14px;
+  padding: 8px 10px;
+  box-sizing: border-box;
+}
+
+.comment-form input,
+.comment-form textarea {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: white;
+  background-color: black;
+  border: 1px solid white;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  box-sizing: border-box;
+  resize: none;
+}
+
+.comment-form button {
+  background: white;
+  color: black;
+  border: 1px solid white;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.comment-form button:hover {
+  opacity: 0.7;
+}
+
+.led-sign { 
+border: 1px solid white; 
+height: 30px;
+border-radius: 4px;
+background-color: black;
+overflow: hidden;
+position: relative;
+display: flex;
+align-items: center;
+}
+
+.KOTAKU { 
+border: 1px solid white; 
+height: 400px;
+border-radius: 4px;
+background-color: black;
+overflow: hidden;
+display: flex;
+align-items: center;
+justify-content: center;
+color: white;
+}
+
+.led-text { 
+  position: absolute;
+  white-space: nowrap; 
+  color: white; 
+  font-size: 12px; 
+  font-weight: bold; 
+  letter-spacing: 0px;
+  word-spacing: 10px;
+  animation: scroll-left 30s linear infinite; 
+  } 
+  @keyframes scroll-left { 
+    0% { 
+      transform: translateX(100%); 
+  } 
+  100% { 
+    transform: translateX(-100%); 
+    } 
+  } 
+
+  #bg-video {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%; 
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -1;
+  object-fit: cover; */
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  color: white;
+  text-align: center;
+}
+
+.xxaa{
+  color: white;
+  font-size: 30px;
+  font-weight: bold;
+}
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+
+<script>
+document.addEventListener("contextmenu", e => e.preventDefault());
+
+firebase.initializeApp({
+  apiKey: 
+  authDomain: 
+  databaseURL: 
+  projectId: 
+});
+
+const db = firebase.database();
+const MAX_SEND = 2;
+const WINDOW_MS = 3000;
+let sendCount = 0;
+let firstSendTime = 0;
+const COOLDOWN_MS = 1500;
+
+function submitComment() {
+
+  const now = Date.now();
+  const lastSend = localStorage.getItem("lastSend");
+
+  if (lastSend && now - lastSend < COOLDOWN_MS) {
+    return;
+  }
+
+  if (firstSendTime === 0 || now - firstSendTime > WINDOW_MS) {
+    firstSendTime = now;
+    sendCount = 0;
+  }
+
+  sendCount++;
+  if (sendCount > MAX_SEND) return;
+
+  const nameEl = document.getElementById("comment-name");
+  const textEl = document.getElementById("comment-text");
+
+  const name = nameEl.value.trim();
+  const text = textEl.value.trim();
+
+  if (!name || !text) return;
+  if (name.length > 30 || text.length > 300) return;
+
+  localStorage.setItem("lastSend", now);
+
+  db.ref("comments").push({
+    name,
+    text,
+    timestamp: now
+  }).then(() => {
+    textEl.value = "";
+  });
+}
+
+function loadComments() {
+  const list = document.getElementById("comments-list");
+
+  db.ref("comments").limitToLast(50).on("value", snap => {
+    list.innerHTML = "";
+
+    const data = snap.val();
+    if (!data) return;
+
+    Object.values(data).reverse().forEach(c => {
+
+      const wrap = document.createElement("div");
+      wrap.className = "comment";
+
+      const head = document.createElement("div");
+      head.className = "comment-header";
+
+      const n = document.createElement("span");
+      n.className = "comment-name";
+      n.textContent = c.name;
+
+      const t = document.createElement("span");
+t.className = "comment-time";
+
+const date = new Date(c.timestamp);
+let hours = date.getHours();
+const minutes = String(date.getMinutes()).padStart(2,'0');
+const ampm = hours >= 12 ? 'PM' : 'AM';
+hours = hours % 12;
+hours = hours ? hours : 12;
+
+t.textContent = `${hours}:${minutes} ${ampm}`;
+
+      const textDiv = document.createElement("div");
+      textDiv.textContent = c.text;
+
+      head.appendChild(n);
+      head.appendChild(t);
+
+      wrap.appendChild(head);
+      wrap.appendChild(textDiv);
+
+      list.appendChild(wrap);
+    });
+  });
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  loadComments();
+
+  document.getElementById("comment-form").addEventListener("submit", e => {
+    e.preventDefault();
+    submitComment();
+  });
+});
+</script>
+<body>
+  <video autoplay muted loop playsinline poster="fallback-image.jpg" id="bg-video">
+  <source src="video/checker.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+<div class="content">
+</div>
+
+
+<div class="wrapper">
+
+  <div class="panels">
+
+    <div class="banner">
+      <div class="banner-inner">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"></path>
+        </svg>
+      </div>
+      <div class="banner-label">BANNER PLACEHOLDER</div>
+    </div>
+
+    <div class="kotitle">
+      <h1>FAREFARE.NEKOWEB.ORG</h1>
+    </div>
+
+<div class="led-sign"> 
+  <div class="led-text">WELCOME TO MY COMMENT SECTION &nbsp;&nbsp;&nbsp;&nbsp; WELCOME TO MY COMMENT SECTION &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WELCOME TO MY COMMENT SECTION &nbsp;</div>
+</div>
+
+<div class="KOTAKU"> 
+  <div class="profile-large">
+    <div class="profile-pic-lg">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8v1H4v-1z"></path>
+      </svg>
+    </div>
+    <div class="profile-info">
+      <div class="profile-name-lg">FAREFARE</div>
+      <p class="profile-desc">Welcome guys, thankyou for visiting this website since it has nothing to offer feel free to leave a comment bellow.</p>
+      <p class="profile-desc">Most people visiting are from Magia Exedra 😘❤️.</p>
+      <div class="profile-links">
+        <p><span class="profile-link-label">Github :</span><a href="https://github.com/farefare-ya/farefare.nekoweb" target="_blank" rel="noopener noreferrer">https://github.com/farefare-ya/farefare.nekoweb</a></p>
+        <p><span class="profile-link-label">X :</span><a href="https://x.com/farefare_ya" target="_blank" rel="noopener noreferrer">https://x.com/farefare_ya</a></p>
+        <img
+      </div></div>
+    </div>
+  </div>
+</div> 
+
+    <div class="kotak">
+      <div class="isian">
+
+        <div id="comments-list" class="comments-list"></div>
+
+        <form id="comment-form" class="comment-form">
+          <input id="comment-name" placeholder="name" maxlength="30" required>
+          <textarea id="comment-text" rows="2" placeholder="comment" maxlength="300" required></textarea>
+          <button type="submit">send</button>
+        </form>
+
+      </div>
+    </div>
+
+    <div class="kobottom">
+  <div class="isian">
+    <p>ATTENTION</p>
+    <p>1. No Hate or profanity.</p>
+    <p>2. No Spamming.</p>
+    <p>3. No Exploit or Payload injection.</p>
+    <p>4. Be kind and Respectful.</p>
+  </div>
+</div>
+
+  </div>
+</div>
+
+</body>
+</html>
